@@ -3,6 +3,7 @@ from typing import List
 from yt_dlp.extractor.common import InfoExtractor
 from yt_dlp.YoutubeDL import YoutubeDL
 
+from moodle_dl.downloader.extractors.modvideostream import ModVideoStreamIE  # noqa: F401
 from moodle_dl.downloader.extractors.echo360 import Echo360IE  # noqa: F401
 from moodle_dl.downloader.extractors.googledrive import GoogleDriveIE  # noqa: F401
 from moodle_dl.downloader.extractors.helixmedia_lti import HelixmediaLtiIE  # noqa: F401
