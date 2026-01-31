@@ -5,6 +5,7 @@
 
 from __future__ import unicode_literals
 
+import logging
 from bs4 import BeautifulSoup
 import re
 
@@ -126,7 +127,7 @@ class ModVideoStreamIE(InfoExtractor):
     def _real_extract(self, url):
         # parse title as video name / get metadata
         # 
-
+        
         video_id = self._match_id(url)
         webpage = self._download_webpage(url, video_id)
 
@@ -174,4 +175,3 @@ class ModVideoStreamIE(InfoExtractor):
             'title': title,
             'formats': formats
         }
-    
