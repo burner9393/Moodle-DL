@@ -72,11 +72,11 @@ if __name__ == "__main__":
         print('Usage: python make_jar.py <username> <password>')
         sys.exit(1)
 
-    email = sys.argv[1]
+    username = sys.argv[1]
     password = sys.argv[2]
 
     try:
-        print('got cookie:', save_cookie(email, password))
+        print('got cookie:', save_cookie(username, password))
     except Exception as e:
         print(e)
         sys.exit(1)
