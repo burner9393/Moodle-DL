@@ -1,0 +1,80 @@
+import time
+import sys
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+
+# netscape_cookies.py
+def to_netscape_string(cookie_data):
+    result = []
+    for cookie in cookie_data:
+        domain = cookie.get('domain', '')
+        expiration_date = cookie.get('expiry', None)
+        path = cookie.get('path', '')
+        secure = cookie.get('secure', False)
+        name = cookie.get('name', '')
+        value = cookie.get('value', '')
+
+        include_sub_domain = domain.startswith('.') if domain else False
+        expiry = str(int(expiration_date)) if expiration_date else '0'
+
+        result.append([
+            domain,
+            str(include_sub_domain).upper(),
+            path,
+            str(secure).upper(),
+            expiry,
+            name,
+            value
+        ])
+
+    return "\n".join("\t".join(cookie_parts) for cookie_parts in result)
+
+
+def save_cookies_to_file(cookie_data, file_path):
+    netscape_string = to_netscape_string(cookie_data)
+    with open(file_path, 'w') as file:
+        file.write(netscape_string)
+# 
+# 
+
+def save_cookie(username, password, moodle_url='https://moodle.reidman.co.il/my/'):
+    options = webdriver.FirefoxOptions()
+
+    driver = webdriver.Firefox(options=options)
+    driver.get(moodle_url)
+
+    if driver.current_url == 'https://moodle.reidman.co.il/login/index.php':
+        driver.find_element(By.ID, 'username').send_keys(username)
+        driver.find_element(By.ID, 'password').send_keys(password)
+        driver.find_element(By.ID, 'loginbtn').click()
+
+    print('waiting for manual OTP')
+    # wait for manual verification of current session
+    # and redirection to /my/..
+    # 
+
+    while '/my/' not in driver.current_url:
+        time.sleep(1)
+
+    cookie_data = driver.get_cookies()
+    save_cookies_to_file(cookie_data, 'Cookies.txt')
+    
+    print('generated cookies!')
+    driver.quit()
+
+    return cookie_data
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print('Usage: python make_jar.py <username> <password>')
+        sys.exit(1)
+
+    email = sys.argv[1]
+    password = sys.argv[2]
+
+    try:
+        print('got cookie:', save_cookie(email, password))
+    except Exception as e:
+        print(e)
+        sys.exit(1)
