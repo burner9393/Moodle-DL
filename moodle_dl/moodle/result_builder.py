@@ -83,7 +83,7 @@ class ResultBuilder:
                 # Handle descriptions of Files, Labels and all mods that we do not handle in separately
                 files += self._handle_description(module_description, **location)
 
-            if location['module_modname'] in ['kalvidres', 'helixmedia', 'lti']:
+            if location['module_modname'] in ['kalvidres', 'helixmedia', 'lti', 'videostream']:
                 location['module_modname'] = 'cookie_mod-' + location['module_modname']
                 files += self._handle_cookie_mod(module_url, **location)
 
