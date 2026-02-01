@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+set -e
+
+username=""
+password=""
+
+# parse args
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+	--username)
+		username="$2"
+		shift 2
+		;;
+	--password)
+		password="$2"
+		shift 2
+		;;
+	-c)
+		config_only=1
+		shift
+		;;
+	*)
+		shift
+		;;
+	esac
+done
+
+if [ ! -d Moodle-DL ]; then
+	echo "cloning repo.."
+	git clone https://github.com/burner9393/Moodle-DL.git
+	cd Moodle-DL
+else
+	echo "(already exists)"
+	cd Moodle-DL
+	git fetch
+	current_branch=$(git symbolic-ref --short HEAD)
+	if [ "$current_branch" = "main" ]; then
+		echo "(updating..)"
+		git fetch origin
+		git pull origin main
+		echo "(updated)"
+	fi
+fi
+
+if [ -n "$config_only" ]; then
+	env py ./moodle-dl --init 2>/dev/null
+	env py ./moodle-dl -c
+	exit 0
+fi
+
+if [ -z "$username" ] || [ -z "$password" ]; then
+	echo "error: missing username / password"
+	exit 1
+fi
+
+echo "working on cookiejar (wait for browser).."
+env py make_jar.py "$username" "$password"
+echo "succeeded, executing moodle-dl"
+exec py ./moodle-dl
